@@ -17,6 +17,10 @@ func NewGrid(width, height int) Grid {
 
 	for x := 0; x < width; x++ {
 		res.cells[x] = make([]cell.Cell, height)
+
+		for y := 0; y < height; y++ {
+			res.cells[x][y] = cell.NewCell()
+		}
 	}
 
 	return res

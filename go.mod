@@ -3,6 +3,7 @@ module github.com/kipitix/game_of_life
 go 1.21.7
 
 require (
+	fyne.io/fyne v1.4.3
 	fyne.io/fyne/v2 v2.4.4
 	goki.dev/enums v0.9.56
 )

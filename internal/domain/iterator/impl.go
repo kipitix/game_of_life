@@ -1,6 +1,8 @@
 package iterator
 
 import (
+	"fmt"
+
 	"github.com/kipitix/game_of_life/internal/domain/cell"
 	"github.com/kipitix/game_of_life/internal/domain/grid"
 )
@@ -28,27 +30,41 @@ type position struct {
 // 2. Any live cell with two or three live neighbors lives on to the next generation.
 // 3. Any live cell with more than three live neighbors dies, as if by overpopulation.
 // 4. sAny dead cell with exactly three live neighbors becomes a live cell, as if by reproduction.
-func (i *iteratorImpl) Process(grid grid.Grid) {
-	for x, column := range grid.Cells() {
+func (i *iteratorImpl) Process(current grid.Grid, result grid.Grid) error {
+	if current.Width() != result.Width() {
+		return fmt.Errorf("current and result grids must have equal width")
+	} else if current.Height() != result.Height() {
+		return fmt.Errorf("current and result grids must have equal height")
+	}
+
+	for x, column := range current.Cells() {
 		for y, curCell := range column {
-			nearPos := i.findNeighborsPositions(position{x: x, y: y}, grid.Width()-1, grid.Height()-1)
-			lifeNeighbors := countLifeNeighbors(grid.Cells(), nearPos)
+
+			nearPos := i.findNeighborsPositions(position{x: x, y: y}, current.Width()-1, current.Height()-1)
+			lifeNeighbors := countLifeNeighbors(current.Cells(), nearPos)
+
 			if curCell.State() == cell.Life {
 				if lifeNeighbors < 2 || lifeNeighbors > 3 {
-					curCell.SetState(cell.Dead)
+					result.Cells()[x][y].SetState(cell.Dead)
+					continue
 				}
 			} else if curCell.State() == cell.Dead {
 				if lifeNeighbors == 3 {
-					curCell.SetState(cell.Life)
+					result.Cells()[x][y].SetState(cell.Life)
+					continue
 				}
 			}
+
+			result.Cells()[x][y].SetState(curCell.State())
 		}
 	}
+
+	return nil
 }
 
 // Find positions for neighbor cells.
 func (i *iteratorImpl) findNeighborsPositions(pos position, maxX, maxY int) []position {
-	res := make([]position, 8)
+	res := make([]position, 0)
 
 	for dx := -1; dx <= 1; dx++ {
 		for dy := -1; dy <= 1; dy++ {

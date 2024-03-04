@@ -1,31 +1,36 @@
 package main
 
 import (
-	"image/color"
-	"time"
+	"context"
 
-	"fyne.io/fyne/v2"
-	"fyne.io/fyne/v2/app"
-	"fyne.io/fyne/v2/canvas"
-	"fyne.io/fyne/v2/container"
+	"github.com/kipitix/game_of_life/internal/application/app"
+	"github.com/kipitix/game_of_life/internal/domain/grid"
+	"github.com/kipitix/game_of_life/internal/domain/iterator"
+	"github.com/kipitix/game_of_life/internal/domain/random"
+	"github.com/kipitix/game_of_life/internal/interfaces/ui/mainwindow"
+)
+
+const (
+	_width  = 200
+	_height = 100
 )
 
 func main() {
-	a := app.New()
-	w := a.NewWindow("Hello")
 
-	obj := canvas.NewRectangle(color.Black)
-	obj.Resize(fyne.NewSize(50, 50))
-	w.SetContent(container.NewWithoutLayout(obj))
+	srcGrid := grid.NewGrid(_width, _height)
 
-	red := color.NRGBA{R: 0xff, A: 0xff}
-	blue := color.NRGBA{B: 0xff, A: 0xff}
-	canvas.NewColorRGBAAnimation(red, blue, time.Second*2, func(c color.Color) {
-		obj.FillColor = c
-		canvas.Refresh(obj)
-	}).Start()
+	rnd := random.NewRandom()
+	rnd.Fill(srcGrid)
 
-	w.Resize(fyne.NewSize(500, 500))
-	w.SetPadded(false)
-	w.ShowAndRun()
+	app := app.NewApp(
+		srcGrid,
+		grid.NewGrid(_width, _height),
+		iterator.NewIterator(),
+		mainwindow.NewMainWindow(_width, _height),
+	)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	app.Run(ctx)
 }
