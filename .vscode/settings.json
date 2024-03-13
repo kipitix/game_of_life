@@ -5,6 +5,8 @@
 		"Fyne",
 		"goki",
 		"kipitix",
-		"mainwindow"
+		"logrus",
+		"mainwindow",
+		"underpopulation"
 	]
 }

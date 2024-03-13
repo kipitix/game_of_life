@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/kipitix/game_of_life/internal/domain/grid"
@@ -10,26 +11,40 @@ import (
 )
 
 type appImpl struct {
-	evenGrid   grid.Grid
-	oddGrid    grid.Grid
-	iterator   iterator.Iterator
-	mainWindow mainwindow.MainWindow
-	evenCycle  bool
+	evenGrid          grid.Grid
+	oddGrid           grid.Grid
+	iterator          iterator.Iterator
+	mainWindow        mainwindow.MainWindow
+	evenCycle         bool
+	lifeCycleDuration time.Duration
+}
+
+type AppCfg struct {
+	LifeCycleDuration string `arg:"--life-cycle-duration,env:LIFE_CYCLE_DURATION" default:"200ms" help:"Duration of life cycle"`
 }
 
 func NewApp(
 	evenGrid grid.Grid,
 	oddGrid grid.Grid,
 	iterator iterator.Iterator,
-	mainWindow mainwindow.MainWindow) App {
+	mainWindow mainwindow.MainWindow,
+	cfg AppCfg) (App, error) {
 
-	return &appImpl{
+	res := &appImpl{
 		evenGrid:   evenGrid,
 		oddGrid:    oddGrid,
 		iterator:   iterator,
 		mainWindow: mainWindow,
 		evenCycle:  true,
 	}
+
+	if lifeCycleDuration, err := time.ParseDuration(cfg.LifeCycleDuration); err != nil {
+		return nil, fmt.Errorf("failed to parse life cycle duration: %w", err)
+	} else {
+		res.lifeCycleDuration = lifeCycleDuration
+	}
+
+	return res, nil
 }
 
 var _ App = (*appImpl)(nil)
@@ -39,7 +54,7 @@ func (a *appImpl) Run(ctx context.Context) error {
 	a.mainWindow.Render(a.oddGrid, a.evenGrid)
 
 	workFunc := func() error {
-		ticker := time.NewTicker(time.Millisecond * 100)
+		ticker := time.NewTicker(a.lifeCycleDuration)
 
 		for {
 			select {

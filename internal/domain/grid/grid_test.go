@@ -8,7 +8,7 @@ import (
 )
 
 func TestNewGrid(t *testing.T) {
-	g := grid.NewGrid(100, 50)
+	g := grid.NewGrid(grid.GridCfg{Width: 100, Height: 50})
 
 	if g.Width() != 100 {
 		t.Errorf("wrong width")
@@ -40,7 +40,7 @@ func TestNewGrid(t *testing.T) {
 }
 
 func TestSetState(t *testing.T) {
-	g := grid.NewGrid(1, 1)
+	g := grid.NewGrid(grid.GridCfg{Width: 1, Height: 1})
 	g.Cells()[0][0].SetState(cell.Life)
 
 	if g.Cells()[0][0].State() != cell.Life {

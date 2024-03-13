@@ -20,10 +20,6 @@ func NewIterator() Iterator {
 
 var _ Iterator = (*iteratorImpl)(nil)
 
-type position struct {
-	x, y int
-}
-
 // Makes new iteration of life cycle.
 // Rules of game:
 // 1. Any live cell with fewer than two live neighbors dies, as if by underpopulation.
@@ -40,8 +36,8 @@ func (i *iteratorImpl) Process(current grid.Grid, result grid.Grid) error {
 	for x, column := range current.Cells() {
 		for y, curCell := range column {
 
-			nearPos := i.findNeighborsPositions(position{x: x, y: y}, current.Width()-1, current.Height()-1)
-			lifeNeighbors := countLifeNeighbors(current.Cells(), nearPos)
+			// nearPos := i.findNeighborsPositions(position{x: x, y: y}, current.Width()-1, current.Height()-1)
+			lifeNeighbors := i.countLifeNeighbors(current.Cells(), x, y, current.Width()-1, current.Height()-1)
 
 			if curCell.State() == cell.Life {
 				if lifeNeighbors < 2 || lifeNeighbors > 3 {
@@ -62,35 +58,26 @@ func (i *iteratorImpl) Process(current grid.Grid, result grid.Grid) error {
 	return nil
 }
 
-// Find positions for neighbor cells.
-func (i *iteratorImpl) findNeighborsPositions(pos position, maxX, maxY int) []position {
-	res := make([]position, 0)
+func (i *iteratorImpl) countLifeNeighbors(cellsGrid grid.CellsGrid, x, y, maxX, maxY int) int {
+	res := 0
 
 	for dx := -1; dx <= 1; dx++ {
 		for dy := -1; dy <= 1; dy++ {
-			nextPos := position{
-				x: pos.x + dx,
-				y: pos.y + dy,
-			}
+
+			nx := x + dx
+			ny := y + dy
 
 			// TODO make case with cropField == false
-			if (nextPos == pos) || (i.cropField && (nextPos.x < 0 || nextPos.y < 0 || nextPos.x > maxX || nextPos.y > maxY)) {
+
+			if (dx == 0 && dy == 0) || (i.cropField && (nx < 0 || ny < 0 || nx > maxX || ny > maxY)) {
 				continue
 			}
 
-			res = append(res, nextPos)
+			if cellsGrid[nx][ny].State() == cell.Life {
+				res++
+			}
 		}
 	}
 
-	return res
-}
-
-func countLifeNeighbors(cellsGrid grid.CellsGrid, nearPositions []position) int {
-	res := 0
-	for _, pos := range nearPositions {
-		if cellsGrid[pos.x][pos.y].State() == cell.Life {
-			res++
-		}
-	}
 	return res
 }

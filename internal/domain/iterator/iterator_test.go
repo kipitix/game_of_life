@@ -18,8 +18,8 @@ func TestNew(t *testing.T) {
 func TestIterateEmpty(t *testing.T) {
 	it := iterator.NewIterator()
 
-	src := grid.NewGrid(3, 3)
-	dst := grid.NewGrid(3, 3)
+	src := grid.NewGrid(grid.GridCfg{Width: 3, Height: 3})
+	dst := grid.NewGrid(grid.GridCfg{Width: 3, Height: 3})
 
 	err := it.Process(src, dst)
 	if err != nil {
@@ -30,8 +30,8 @@ func TestIterateEmpty(t *testing.T) {
 func TestIterateWrongWidth(t *testing.T) {
 	it := iterator.NewIterator()
 
-	src := grid.NewGrid(3, 3)
-	dst := grid.NewGrid(2, 3)
+	src := grid.NewGrid(grid.GridCfg{Width: 3, Height: 3})
+	dst := grid.NewGrid(grid.GridCfg{Width: 2, Height: 3})
 
 	err := it.Process(src, dst)
 	if err == nil {
@@ -42,8 +42,8 @@ func TestIterateWrongWidth(t *testing.T) {
 func TestIterateWrongHeight(t *testing.T) {
 	it := iterator.NewIterator()
 
-	src := grid.NewGrid(3, 3)
-	dst := grid.NewGrid(3, 2)
+	src := grid.NewGrid(grid.GridCfg{Width: 3, Height: 3})
+	dst := grid.NewGrid(grid.GridCfg{Width: 3, Height: 2})
 
 	err := it.Process(src, dst)
 	if err == nil {
@@ -54,8 +54,8 @@ func TestIterateWrongHeight(t *testing.T) {
 func TestIterateOne(t *testing.T) {
 	it := iterator.NewIterator()
 
-	src := grid.NewGrid(3, 3)
-	dst := grid.NewGrid(3, 3)
+	src := grid.NewGrid(grid.GridCfg{Width: 3, Height: 3})
+	dst := grid.NewGrid(grid.GridCfg{Width: 3, Height: 3})
 
 	src.Cells()[1][1].SetState(cell.Life)
 
@@ -72,8 +72,8 @@ func TestIterateOne(t *testing.T) {
 func TestIterateTwo(t *testing.T) {
 	it := iterator.NewIterator()
 
-	src := grid.NewGrid(3, 3)
-	dst := grid.NewGrid(3, 3)
+	src := grid.NewGrid(grid.GridCfg{Width: 3, Height: 3})
+	dst := grid.NewGrid(grid.GridCfg{Width: 3, Height: 3})
 
 	src.Cells()[0][1].SetState(cell.Life)
 	src.Cells()[1][1].SetState(cell.Life)
@@ -101,8 +101,8 @@ func TestIterateTwo(t *testing.T) {
 func TestIterateThree(t *testing.T) {
 	it := iterator.NewIterator()
 
-	src := grid.NewGrid(3, 3)
-	dst := grid.NewGrid(3, 3)
+	src := grid.NewGrid(grid.GridCfg{Width: 3, Height: 3})
+	dst := grid.NewGrid(grid.GridCfg{Width: 3, Height: 3})
 
 	src.Cells()[0][1].SetState(cell.Life)
 	src.Cells()[1][1].SetState(cell.Life)
@@ -173,8 +173,8 @@ func TestIterateThree(t *testing.T) {
 func TestIterateFour(t *testing.T) {
 	it := iterator.NewIterator()
 
-	src := grid.NewGrid(3, 3)
-	dst := grid.NewGrid(3, 3)
+	src := grid.NewGrid(grid.GridCfg{Width: 3, Height: 3})
+	dst := grid.NewGrid(grid.GridCfg{Width: 3, Height: 3})
 
 	src.Cells()[0][0].SetState(cell.Life)
 	src.Cells()[0][1].SetState(cell.Life)
